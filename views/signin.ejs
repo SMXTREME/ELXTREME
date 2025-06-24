@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login - ELXTREME</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                /* Dark mode variables (default) */
+                --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                --bg-secondary: rgba(255, 255, 255, 0.05);
+                --text-primary: #ffffff;
+                --text-secondary: rgba(255, 255, 255, 0.9);
+                --text-muted: rgba(255, 255, 255, 0.7);
+                --card-bg: rgba(255, 255, 255, 0.1);
+                --card-border: rgba(255, 255, 255, 0.2);
+                --input-bg: rgba(255, 255, 255, 0.1);
+                --input-border: rgba(255, 255, 255, 0.3);
+                --input-focus-border: rgba(255, 255, 255, 0.6);
+                --input-text: #ffffff;
+                --placeholder-color: rgba(255, 255, 255, 0.6);
+                --shadow-color: rgba(0, 0, 0, 0.2);
+                --floating-shape: rgba(255, 255, 255, 0.1);
+                --shimmer-color: rgba(255, 255, 255, 0.1);
+                --error-color: #ff6b6b;
+                --success-color: #51cf66;
+                --checkbox-bg: rgba(255, 255, 255, 0.1);
+                --checkbox-checked: #feca57;
+            }
+
+            @media (prefers-color-scheme: light) {
+                :root {
+                    --bg-primary: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+                    --bg-secondary: rgba(0, 0, 0, 0.03);
+                    --text-primary: #2d3436;
+                    --text-secondary: #636e72;
+                    --text-muted: #636e72;
+                    --card-bg: rgba(255, 255, 255, 0.9);
+                    --card-border: rgba(0, 0, 0, 0.1);
+                    --input-bg: rgba(255, 255, 255, 0.8);
+                    --input-border: rgba(0, 0, 0, 0.2);
+                    --input-focus-border: rgba(0, 0, 0, 0.5);
+                    --input-text: #2d3436;
+                    --placeholder-color: rgba(0, 0, 0, 0.5);
+                    --shadow-color: rgba(0, 0, 0, 0.1);
+                    --floating-shape: rgba(255, 255, 255, 0.3);
+                    --shimmer-color: rgba(0, 0, 0, 0.05);
+                    --error-color: #e17055;
+                    --success-color: #00b894;
+                    --checkbox-bg: rgba(0, 0, 0, 0.1);
+                    --checkbox-checked: #ff6b6b;
+                }
+            }
+
+            body {
+                font-family: 'Arial', sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                overflow-x: hidden;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            /* Header */
+            header {
+                padding: 20px 0;
+                position: relative;
+                z-index: 100;
+            }
+
+            .header-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+                font-weight: 900;
+                background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-transform: uppercase;
+                letter-spacing: -2px;
+                animation: glow 2s ease-in-out infinite alternate;
+                text-decoration: none;
+            }
+
+            @keyframes glow {
+                from {
+                    text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+                }
+                to {
+                    text-shadow: 0 0 30px rgba(255, 107, 107, 0.6),
+                        0 0 40px rgba(255, 107, 107, 0.4);
+                }
+            }
+
+            @media (prefers-color-scheme: light) {
+                @keyframes glow {
+                    from {
+                        text-shadow: 0 0 20px rgba(255, 107, 107, 0.2);
+                    }
+                    to {
+                        text-shadow: 0 0 30px rgba(255, 107, 107, 0.4),
+                            0 0 40px rgba(255, 107, 107, 0.3);
+                    }
+                }
+            }
+
+            .back-btn {
+                padding: 12px 24px;
+                background: var(--input-bg);
+                border: 2px solid var(--input-border);
+                border-radius: 50px;
+                color: var(--text-primary);
+                text-decoration: none;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+
+            .back-btn:hover {
+                background: var(--card-bg);
+                border-color: var(--input-focus-border);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px var(--shadow-color);
+            }
+
+            /* Main Content */
+            .main-content {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 60px 0;
+            }
+
+            .login-container {
+                width: 100%;
+                max-width: 450px;
+                background: var(--card-bg);
+                backdrop-filter: blur(20px);
+                border: 1px solid var(--card-border);
+                border-radius: 30px;
+                padding: 50px 40px;
+                box-shadow: 0 20px 60px var(--shadow-color);
+                position: relative;
+                overflow: hidden;
+                animation: slideInUp 0.8s ease-out;
+            }
+
+            .login-container::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, var(--shimmer-color), transparent);
+                transform: rotate(45deg);
+                transition: all 0.5s;
+                opacity: 0;
+            }
+
+            .login-container:hover::before {
+                opacity: 1;
+                animation: shimmer 2s ease-in;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                }
+                100% {
+                    transform: translateX(100%) translateY(100%) rotate(45deg);
+                }
+            }
+
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .login-title {
+                text-align: center;
+                font-size: 2.5rem;
+                font-weight: 900;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: -1px;
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .login-subtitle {
+                text-align: center;
+                color: var(--text-secondary);
+                margin-bottom: 40px;
+                font-size: 1.1rem;
+                line-height: 1.5;
+            }
+
+            /* Message Area */
+            .message-area {
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 15px;
+                font-weight: 600;
+                text-align: center;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+                display: none;
+            }
+
+            .message-area.show {
+                opacity: 1;
+                transform: translateY(0);
+                display: block;
+            }
+
+            .message-area.error {
+                background: rgba(255, 107, 107, 0.15);
+                color: var(--error-color);
+                border: 2px solid var(--error-color);
+            }
+
+            .message-area.success {
+                background: rgba(81, 207, 102, 0.15);
+                color: var(--success-color);
+                border: 2px solid var(--success-color);
+            }
+
+            .form-group {
+                margin-bottom: 25px;
+                position: relative;
+            }
+
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: var(--text-primary);
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 18px 20px;
+                background: var(--input-bg);
+                border: 2px solid var(--input-border);
+                border-radius: 15px;
+                color: var(--input-text);
+                font-size: 1rem;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+                outline: none;
+            }
+
+            .form-input::placeholder {
+                color: var(--placeholder-color);
+            }
+
+            .form-input:focus {
+                border-color: var(--input-focus-border);
+                background: var(--card-bg);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px var(--shadow-color);
+            }
+
+            /* Custom Checkbox */
+            .checkbox-group {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .checkbox-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+            }
+
+            .checkbox-input {
+                position: absolute;
+                opacity: 0;
+                cursor: pointer;
+            }
+
+            .checkbox-custom {
+                width: 22px;
+                height: 22px;
+                background: var(--checkbox-bg);
+                border: 2px solid var(--input-border);
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+            }
+
+            .checkbox-input:checked + .checkbox-custom {
+                background: var(--checkbox-checked);
+                border-color: var(--checkbox-checked);
+                transform: scale(1.1);
+            }
+
+            .checkbox-input:checked + .checkbox-custom::after {
+                content: '✓';
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                animation: checkmark-pop 0.3s ease;
+            }
+
+            @keyframes checkmark-pop {
+                0% {
+                    transform: scale(0);
+                }
+                50% {
+                    transform: scale(1.3);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            .checkbox-label {
+                color: var(--text-secondary);
+                font-size: 0.95rem;
+                cursor: pointer;
+                user-select: none;
+                margin-left: 8px;
+            }
+
+            .checkbox-wrapper:hover .checkbox-custom {
+                border-color: var(--input-focus-border);
+                transform: translateY(-1px);
+            }
+
+            .submit-btn {
+                width: 100%;
+                padding: 20px;
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                color: white;
+                border: none;
+                border-radius: 15px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+                position: relative;
+                overflow: hidden;
+                margin-top: 10px;
+            }
+
+            .submit-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent
+                );
+                transition: left 0.5s;
+            }
+
+            .submit-btn:hover::before {
+                left: 100%;
+            }
+
+            .submit-btn:hover {
+                transform: translateY(-3px) scale(1.02);
+                box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+            }
+
+            .submit-btn:active {
+                transform: translateY(-1px) scale(0.98);
+            }
+
+            .submit-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            .forgot-password {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            .forgot-password a {
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+
+            .forgot-password a:hover {
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .signup-link {
+                text-align: center;
+                margin-top: 30px;
+                color: var(--text-secondary);
+                border-top: 1px solid var(--card-border);
+                padding-top: 25px;
+            }
+
+            .signup-link a {
+                color: var(--text-primary);
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .signup-link a:hover {
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            /* Floating elements */
+            .floating-shapes {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            .shape {
+                position: absolute;
+                background: var(--floating-shape);
+                border-radius: 50%;
+                animation: floatAround 20s infinite linear;
+            }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 60%;
+                right: 10%;
+                animation-delay: -5s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 20%;
+                left: 20%;
+                animation-delay: -10s;
+            }
+
+            .shape:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                top: 40%;
+                right: 30%;
+                animation-delay: -15s;
+            }
+
+            @keyframes floatAround {
+                0% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+                33% {
+                    transform: translateY(-30px) rotate(120deg);
+                }
+                66% {
+                    transform: translateY(15px) rotate(240deg);
+                }
+                100% {
+                    transform: translateY(0px) rotate(360deg);
+                }
+            }
+
+            /* Mobile Responsiveness */
+            @media (max-width: 768px) {
+                .header-content {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .logo {
+                    font-size: 2rem;
+                }
+
+                .main-content {
+                    padding: 40px 0;
+                }
+
+                .login-container {
+                    padding: 40px 30px;
+                    margin: 0 20px;
+                }
+
+                .login-title {
+                    font-size: 2rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .login-container {
+                    padding: 30px 20px;
+                    margin: 0 10px;
+                }
+
+                .login-title {
+                    font-size: 1.8rem;
+                }
+            }
+
+            /* Smooth transitions for theme changes */
+            * {
+                transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            }
+
+            .form-input,
+            .submit-btn,
+            .back-btn,
+            .checkbox-custom {
+                transition: all 0.3s ease;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <a href="/" class="logo">ELXTREME</a>
+                    <a href="/" class="back-btn">← Back to Home</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="container">
+                <div class="login-container">
+                    <h1 class="login-title">Welcome Back</h1>
+                    <p class="login-subtitle">Sign in to your ELXTREME account</p>
+
+                    <!-- Message Area for server responses -->
+                    <div
+                        class="message-area <% if (type) { %> <%= type %> show <% } %>"
+                        id="messageArea"
+                    >
+                        <% if (message) { %> <%= message %> <% } %>
+                    </div>
+
+                    <form id="loginForm" action="/signin" method="POST">
+                        <div class="form-group">
+                            <label for="username" class="form-label">Username *</label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                class="form-input"
+                                placeholder="Enter your username"
+                                required
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password *</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
+
+                        <div class="checkbox-group">
+                            <div class="checkbox-wrapper">
+                                <input
+                                    type="checkbox"
+                                    id="rememberMe"
+                                    name="rememberMe"
+                                    class="checkbox-input"
+                                />
+                                <div class="checkbox-custom"></div>
+                                <label for="rememberMe" class="checkbox-label"
+                                    >Remember me for 30 days</label
+                                >
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Sign In</button>
+                    </form>
+
+                    <!-- <div class="forgot-password">
+                        <a href="#">Forgot your password?</a>
+                    </div> -->
+
+                    <div class="signup-link">
+                        Don't have an account? <a href="/signup">Create one here</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('loginForm');
+                const messageArea = document.getElementById('messageArea');
+
+                // Floating shapes parallax effect
+                window.addEventListener('scroll', function () {
+                    const scrolled = window.pageYOffset;
+                    const shapes = document.querySelectorAll('.shape');
+
+                    shapes.forEach((shape, index) => {
+                        const speed = 0.5 + index * 0.2;
+                        shape.style.transform = `translateY(${scrolled * speed}px) rotate(${
+                            scrolled * 0.1
+                        }deg)`;
+                    });
+                });
+
+                // Add ripple effect to submit button
+                const submitBtn = document.querySelector('.submit-btn');
+                submitBtn.addEventListener('click', function (e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.pointerEvents = 'none';
+
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+
+                // Enhanced checkbox interaction
+                const checkboxWrapper = document.querySelector('.checkbox-wrapper');
+                const checkboxInput = document.querySelector('.checkbox-input');
+
+                checkboxWrapper.addEventListener('click', function (e) {
+                    if (e.target !== checkboxInput) {
+                        checkboxInput.checked = !checkboxInput.checked;
+
+                        // Add a little bounce effect
+                        const customCheckbox = this.querySelector('.checkbox-custom');
+                        customCheckbox.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            customCheckbox.style.transform = checkboxInput.checked
+                                ? 'scale(1.1)'
+                                : 'scale(1)';
+                        }, 150);
+                    }
+                });
+            });
+
+            // Add ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+            document.head.appendChild(style);
+        </script>
+    </body>
+</html>

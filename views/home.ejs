@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ELXTREME - Expense Logging Simplified</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                /* Light mode variables */
+                --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                --bg-secondary: rgba(255, 255, 255, 0.05);
+                --text-primary: #ffffff;
+                --text-secondary: rgba(255, 255, 255, 0.9);
+                --text-muted: rgba(255, 255, 255, 0.7);
+                --card-bg: rgba(255, 255, 255, 0.1);
+                --card-border: rgba(255, 255, 255, 0.2);
+                --card-hover-bg: rgba(255, 255, 255, 0.15);
+                --button-bg: rgba(255, 255, 255, 0.1);
+                --button-border: rgba(255, 255, 255, 0.3);
+                --button-hover-bg: rgba(255, 255, 255, 0.2);
+                --button-hover-border: rgba(255, 255, 255, 0.5);
+                --shadow-color: rgba(0, 0, 0, 0.2);
+                --footer-bg: rgba(0, 0, 0, 0.2);
+                --footer-border: rgba(255, 255, 255, 0.1);
+                --floating-shape: rgba(255, 255, 255, 0.1);
+                --shimmer-color: rgba(255, 255, 255, 0.1);
+            }
+
+            @media (prefers-color-scheme: light) {
+                :root {
+                    --bg-primary: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+                    --bg-secondary: rgba(0, 0, 0, 0.03);
+                    --text-primary: #2d3436;
+                    --text-secondary: #636e72;
+                    --text-muted: #636e72;
+                    --card-bg: rgba(255, 255, 255, 0.8);
+                    --card-border: rgba(0, 0, 0, 0.1);
+                    --card-hover-bg: rgba(255, 255, 255, 0.95);
+                    --button-bg: rgba(255, 255, 255, 0.9);
+                    --button-border: rgba(0, 0, 0, 0.1);
+                    --button-hover-bg: rgba(255, 255, 255, 1);
+                    --button-hover-border: rgba(0, 0, 0, 0.2);
+                    --shadow-color: rgba(0, 0, 0, 0.1);
+                    --footer-bg: rgba(255, 255, 255, 0.9);
+                    --footer-border: rgba(0, 0, 0, 0.1);
+                    --floating-shape: rgba(255, 255, 255, 0.3);
+                    --shimmer-color: rgba(0, 0, 0, 0.05);
+                }
+            }
+
+            body {
+                font-family: 'Arial', sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                overflow-x: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            /* Header */
+            header {
+                padding: 20px 0;
+                position: relative;
+                z-index: 100;
+            }
+
+            .header-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+                font-weight: 900;
+                background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-transform: uppercase;
+                letter-spacing: -2px;
+                animation: glow 2s ease-in-out infinite alternate;
+            }
+
+            @keyframes glow {
+                from {
+                    text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+                }
+                to {
+                    text-shadow: 0 0 30px rgba(255, 107, 107, 0.6),
+                        0 0 40px rgba(255, 107, 107, 0.4);
+                }
+            }
+
+            @media (prefers-color-scheme: light) {
+                @keyframes glow {
+                    from {
+                        text-shadow: 0 0 20px rgba(255, 107, 107, 0.2);
+                    }
+                    to {
+                        text-shadow: 0 0 30px rgba(255, 107, 107, 0.4),
+                            0 0 40px rgba(255, 107, 107, 0.3);
+                    }
+                }
+            }
+
+            .nav-btn {
+                padding: 12px 24px;
+                background: var(--button-bg);
+                border: 2px solid var(--button-border);
+                border-radius: 50px;
+                color: var(--text-primary);
+                text-decoration: none;
+                font-weight: 600;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+
+            .nav-btn:hover {
+                background: var(--button-hover-bg);
+                border-color: var(--button-hover-border);
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px var(--shadow-color);
+            }
+
+            /* Hero Section */
+            .hero {
+                padding: 100px 0;
+                text-align: center;
+                position: relative;
+            }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0)"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23a)"/></svg>')
+                    center/300px 300px;
+                animation: float 6s ease-in-out infinite;
+                pointer-events: none;
+            }
+
+            @media (prefers-color-scheme: light) {
+                .hero::before {
+                    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="a" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(0,0,0,0.05)"/><stop offset="100%" style="stop-color:rgba(0,0,0,0)"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23a)"/></svg>')
+                        center/300px 300px;
+                }
+            }
+
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+                50% {
+                    transform: translateY(-20px) rotate(180deg);
+                }
+            }
+
+            .hero-title {
+                font-size: clamp(3rem, 8vw, 6rem);
+                font-weight: 900;
+                margin-bottom: 20px;
+                text-transform: uppercase;
+                letter-spacing: -3px;
+                line-height: 0.9;
+                background: var(--text-primary);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: slideInUp 1s ease-out;
+            }
+
+            @media (prefers-color-scheme: light) {
+                .hero-title {
+                    background: linear-gradient(45deg, #2d3436, #636e72, #2d3436);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+            }
+
+            .hero-subtitle {
+                font-size: clamp(1.2rem, 3vw, 1.8rem);
+                margin-bottom: 40px;
+                color: var(--text-secondary);
+                font-weight: 300;
+                animation: slideInUp 1s ease-out 0.2s both;
+            }
+
+            @keyframes slideInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .cta-button {
+                display: inline-block;
+                padding: 20px 50px;
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                color: white;
+                text-decoration: none;
+                border-radius: 50px;
+                font-size: 1.2rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: all 0.3s ease;
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+                animation: slideInUp 1s ease-out 0.4s both;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .cta-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.3),
+                    transparent
+                );
+                transition: left 0.5s;
+            }
+
+            .cta-button:hover::before {
+                left: 100%;
+            }
+
+            .cta-button:hover {
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
+            }
+
+            /* Features Section */
+            .features {
+                padding: 100px 0;
+                background: var(--bg-secondary);
+                backdrop-filter: blur(10px);
+            }
+
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 40px;
+                margin-top: 60px;
+            }
+
+            .feature-card {
+                background: var(--card-bg);
+                padding: 40px 30px;
+                border-radius: 20px;
+                text-align: center;
+                backdrop-filter: blur(10px);
+                border: 1px solid var(--card-border);
+                transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .feature-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, var(--shimmer-color), transparent);
+                transform: rotate(45deg);
+                transition: all 0.5s;
+                opacity: 0;
+            }
+
+            .feature-card:hover::before {
+                opacity: 1;
+                animation: shimmer 1.5s ease-in-out;
+            }
+
+            @keyframes shimmer {
+                0% {
+                    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                }
+                100% {
+                    transform: translateX(100%) translateY(100%) rotate(45deg);
+                }
+            }
+
+            .feature-card:hover {
+                transform: translateY(-10px);
+                background: var(--card-hover-bg);
+                box-shadow: 0 20px 40px var(--shadow-color);
+            }
+
+            .feature-icon {
+                font-size: 3rem;
+                margin-bottom: 20px;
+                background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .feature-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 15px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: var(--text-primary);
+            }
+
+            .feature-description {
+                color: var(--text-secondary);
+                line-height: 1.6;
+            }
+
+            .section-title {
+                text-align: center;
+                font-size: clamp(2.5rem, 5vw, 4rem);
+                font-weight: 900;
+                text-transform: uppercase;
+                letter-spacing: -2px;
+                margin-bottom: 20px;
+                color: var(--text-primary);
+            }
+
+            .section-subtitle {
+                text-align: center;
+                font-size: 1.2rem;
+                color: var(--text-secondary);
+                max-width: 600px;
+                margin: 0 auto;
+                line-height: 1.6;
+            }
+
+            /* Footer */
+            footer {
+                padding: 50px 0;
+                text-align: center;
+                background: var(--footer-bg);
+                border-top: 1px solid var(--footer-border);
+                backdrop-filter: blur(10px);
+            }
+
+            .footer-logo {
+                font-size: 2rem;
+                font-weight: 900;
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-transform: uppercase;
+                margin-bottom: 20px;
+            }
+
+            .footer-text {
+                color: var(--text-muted);
+                font-size: 1rem;
+            }
+
+            /* Mobile Responsiveness */
+            @media (max-width: 768px) {
+                .header-content {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .hero {
+                    padding: 60px 0;
+                }
+
+                .features {
+                    padding: 60px 0;
+                }
+
+                .features-grid {
+                    grid-template-columns: 1fr;
+                    gap: 30px;
+                }
+
+                .feature-card {
+                    padding: 30px 20px;
+                }
+            }
+
+            /* Floating elements */
+            .floating-shapes {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            .shape {
+                position: absolute;
+                background: var(--floating-shape);
+                border-radius: 50%;
+                animation: floatAround 20s infinite linear;
+            }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 60%;
+                right: 10%;
+                animation-delay: -5s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 20%;
+                left: 20%;
+                animation-delay: -10s;
+            }
+
+            @keyframes floatAround {
+                0% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+                33% {
+                    transform: translateY(-30px) rotate(120deg);
+                }
+                66% {
+                    transform: translateY(15px) rotate(240deg);
+                }
+                100% {
+                    transform: translateY(0px) rotate(360deg);
+                }
+            }
+
+            /* Smooth transitions for theme changes */
+            * {
+                transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">ELXTREME</div>
+                    <a href="/signup" class="nav-btn">Get Started</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-title">Track Every<br />Expense</h1>
+                <p class="hero-subtitle">
+                    The ultimate expense logging solution that keeps your finances in check with
+                    extreme precision
+                </p>
+                <a href="/signup" class="cta-button">Start Tracking Now</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Why ELXTREME?</h2>
+                <p class="section-subtitle">
+                    Pure expense tracking power with no distractions. Just you, your expenses, and
+                    total control.
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3 class="feature-title">Instant Logging</h3>
+                        <p class="feature-description">
+                            Log expenses in seconds with our lightning-fast interface. No complex
+                            forms or unnecessary steps.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title">Smart Analytics</h3>
+                        <p class="feature-description">
+                            Get instant insights into your spending patterns with beautiful,
+                            easy-to-understand visualizations.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3 class="feature-title">Laser Focus</h3>
+                        <p class="feature-description">
+                            No bloat, no clutter. ELXTREME does one thing perfectly: track your
+                            expenses with extreme precision.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="footer-logo">ELXTREME</div>
+                <p class="footer-text">
+                    Expense logging taken to the extreme. Simple. Powerful. Effective.
+                </p>
+            </div>
+        </footer>
+
+        <script>
+            // Add some interactive animations
+            document.addEventListener('DOMContentLoaded', function () {
+                // Parallax effect for floating shapes
+                window.addEventListener('scroll', function () {
+                    const scrolled = window.pageYOffset;
+                    const shapes = document.querySelectorAll('.shape');
+
+                    shapes.forEach((shape, index) => {
+                        const speed = 0.5 + index * 0.2;
+                        shape.style.transform = `translateY(${scrolled * speed}px) rotate(${
+                            scrolled * 0.1
+                        }deg)`;
+                    });
+                });
+
+                // Add click animation to CTA button
+                const ctaButton = document.querySelector('.cta-button');
+                ctaButton.addEventListener('click', function (e) {
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.left = '50%';
+                    ripple.style.top = '50%';
+                    ripple.style.width = '20px';
+                    ripple.style.height = '20px';
+                    ripple.style.marginLeft = '-10px';
+                    ripple.style.marginTop = '-10px';
+
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Add ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+            document.head.appendChild(style);
+        </script>
+    </body>
+</html>
