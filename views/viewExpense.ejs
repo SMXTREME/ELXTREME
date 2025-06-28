@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= type === 'ote' ? 'One-time' : 'Recurring' %> Expense - ELXTREME</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                --bg-secondary: rgba(255, 255, 255, 0.05);
+                --text-primary: #ffffff;
+                --text-secondary: rgba(255, 255, 255, 0.9);
+                --text-muted: rgba(255, 255, 255, 0.7);
+                --card-bg: rgba(255, 255, 255, 0.1);
+                --card-border: rgba(255, 255, 255, 0.2);
+                --card-hover-bg: rgba(255, 255, 255, 0.15);
+                --button-bg: rgba(255, 255, 255, 0.1);
+                --button-border: rgba(255, 255, 255, 0.3);
+                --button-hover-bg: rgba(255, 255, 255, 0.2);
+                --shadow-color: rgba(0, 0, 0, 0.2);
+                --danger-bg: linear-gradient(45deg, #ff4757, #ff3742);
+                --success-bg: linear-gradient(45deg, #2ed573, #7bed9f);
+            }
+
+            @media (prefers-color-scheme: light) {
+                :root {
+                    --bg-primary: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+                    --bg-secondary: rgba(0, 0, 0, 0.03);
+                    --text-primary: #2d3436;
+                    --text-secondary: #636e72;
+                    --text-muted: #636e72;
+                    --card-bg: rgba(255, 255, 255, 0.8);
+                    --card-border: rgba(0, 0, 0, 0.1);
+                    --card-hover-bg: rgba(255, 255, 255, 0.95);
+                    --button-bg: rgba(255, 255, 255, 0.9);
+                    --button-border: rgba(0, 0, 0, 0.1);
+                    --button-hover-bg: rgba(255, 255, 255, 1);
+                    --shadow-color: rgba(0, 0, 0, 0.1);
+                    --danger-bg: linear-gradient(45deg, #ff4757, #ff3742);
+                    --success-bg: linear-gradient(45deg, #2ed573, #7bed9f);
+                }
+            }
+
+            body {
+                font-family: 'Arial', sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                min-height: 100vh;
+            }
+
+            /* Header */
+            .header {
+                background: var(--card-bg);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid var(--card-border);
+                padding: 15px 0;
+            }
+
+            .header-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                font-weight: 900;
+                background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-transform: uppercase;
+                letter-spacing: -1px;
+            }
+
+            .nav-links {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .back-btn {
+                padding: 8px 20px;
+                background: var(--button-bg);
+                border: 1px solid var(--button-border);
+                border-radius: 25px;
+                color: var(--text-primary);
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .back-btn:hover {
+                background: var(--button-hover-bg);
+                transform: translateY(-1px);
+            }
+
+            .user-info {
+                color: var(--text-secondary);
+                font-weight: 500;
+            }
+
+            /* Main Container */
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 30px 20px;
+            }
+
+            /* Expense Card */
+            .expense-card {
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 20px;
+                padding: 40px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px var(--shadow-color);
+                margin-bottom: 30px;
+            }
+
+            .expense-header {
+                text-align: center;
+                margin-bottom: 40px;
+                padding-bottom: 30px;
+                border-bottom: 1px solid var(--card-border);
+            }
+
+            .expense-type-badge {
+                display: inline-block;
+                padding: 8px 20px;
+                border-radius: 25px;
+                font-size: 0.9rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 20px;
+            }
+
+            .expense-type-badge.one-time {
+                background: linear-gradient(45deg, #48dbfb, #0984e3);
+                color: white;
+            }
+
+            .expense-type-badge.recurring {
+                background: linear-gradient(45deg, #feca57, #ff9f43);
+                color: white;
+            }
+
+            .expense-title {
+                font-size: 2.5rem;
+                font-weight: 900;
+                margin-bottom: 15px;
+                color: var(--text-primary);
+            }
+
+            .expense-amount {
+                font-size: 3.5rem;
+                font-weight: 900;
+                color: #ff6b6b;
+                margin-bottom: 10px;
+            }
+
+            .currency {
+                font-size: 1.5rem;
+                color: var(--text-muted);
+                margin-left: 10px;
+            }
+
+            /* Expense Details */
+            .expense-details {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                margin-bottom: 40px;
+            }
+
+            .detail-group {
+                background: var(--button-bg);
+                padding: 25px;
+                border-radius: 15px;
+                border: 1px solid var(--button-border);
+            }
+
+            .detail-label {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+
+            .detail-value {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                word-break: break-word;
+            }
+
+            .detail-value.large {
+                font-size: 1.4rem;
+                font-weight: 700;
+            }
+
+            /* Description */
+            .description-section {
+                margin-bottom: 40px;
+            }
+
+            .description-content {
+                background: var(--button-bg);
+                padding: 25px;
+                border-radius: 15px;
+                border: 1px solid var(--button-border);
+                font-size: 1.1rem;
+                line-height: 1.6;
+                color: var(--text-secondary);
+            }
+
+            .no-description {
+                color: var(--text-muted);
+                font-style: italic;
+                text-align: center;
+            }
+
+            /* Action Buttons */
+            .action-buttons {
+                display: flex;
+                gap: 20px;
+                justify-content: center;
+            }
+
+            .action-btn {
+                padding: 15px 30px;
+                border: none;
+                border-radius: 10px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                text-align: center;
+                min-width: 150px;
+            }
+
+            .action-btn.edit {
+                background: var(--success-bg);
+                color: white;
+            }
+
+            .action-btn.delete {
+                background: var(--danger-bg);
+                color: white;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Recurring Specific Styles */
+            .recurring-info {
+                background: linear-gradient(
+                    45deg,
+                    rgba(254, 202, 87, 0.1),
+                    rgba(255, 159, 67, 0.1)
+                );
+                border: 1px solid rgba(254, 202, 87, 0.3);
+                padding: 25px;
+                border-radius: 15px;
+                margin-bottom: 30px;
+            }
+
+            .recurring-title {
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: #feca57;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+
+            .recurring-details {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .recurring-detail {
+                padding: 15px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 10px;
+            }
+
+            .recurring-detail-label {
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                margin-bottom: 5px;
+            }
+
+            .recurring-detail-value {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--text-primary);
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .expense-details {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .expense-title {
+                    font-size: 2rem;
+                }
+
+                .expense-amount {
+                    font-size: 2.5rem;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .recurring-details {
+                    grid-template-columns: 1fr;
+                }
+
+                .header-content {
+                    flex-direction: column;
+                    gap: 15px;
+                    text-align: center;
+                }
+
+                .nav-links {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+            }
+
+            /* Delete Confirmation Modal */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .modal-content {
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 15px;
+                padding: 30px;
+                width: 90%;
+                max-width: 400px;
+                backdrop-filter: blur(10px);
+                text-align: center;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 20px;
+                color: #ff4757;
+            }
+
+            .modal-message {
+                font-size: 1.1rem;
+                color: var(--text-secondary);
+                margin-bottom: 30px;
+                line-height: 1.5;
+            }
+
+            .modal-actions {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+            }
+
+            .modal-btn {
+                padding: 12px 25px;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                text-align: center;
+                min-width: 100px;
+            }
+
+            .modal-btn.confirm {
+                background: var(--danger-bg);
+                color: white;
+            }
+
+            .modal-btn.cancel {
+                background: var(--button-bg);
+                color: var(--text-primary);
+                border: 1px solid var(--button-border);
+            }
+
+            .modal-btn:hover {
+                transform: translateY(-2px);
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">ELXTREME</div>
+                <div class="nav-links">
+                    <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+                    <span class="user-info">Hello, <%= user.userName %></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Expense Card -->
+            <div class="expense-card">
+                <!-- Expense Header -->
+                <div class="expense-header">
+                    <div
+                        class="expense-type-badge <%= type === 'ote' ? 'one-time' : 'recurring' %>"
+                    >
+                        <%= type === 'ote' ? 'One-time Expense' : 'Recurring Expense' %>
+                    </div>
+                    <h1 class="expense-title">
+                        <%= type === 'ote' ? oneTimeExpense.title : recurringExpense.title %>
+                    </h1>
+                    <div class="expense-amount">
+                        ₹<%= type === 'ote' ? oneTimeExpense.amount : recurringExpense.amount %>
+                        <span class="currency">INR</span>
+                    </div>
+                </div>
+
+                <!-- Recurring Info (only for recurring expenses) -->
+                <% if (type === 're') { %>
+                <div class="recurring-info">
+                    <h3 class="recurring-title">Recurring Schedule</h3>
+                    <div class="recurring-details">
+                        <div class="recurring-detail">
+                            <div class="recurring-detail-label">Frequency</div>
+                            <div class="recurring-detail-value">
+                                Every <%= recurringExpense.wayOfRepeats.repeats %> <%=
+                                recurringExpense.wayOfRepeats.every %><%=
+                                recurringExpense.wayOfRepeats.repeats > 1 ? 's' : '' %>
+                            </div>
+                        </div>
+                        <div class="recurring-detail">
+                            <div class="recurring-detail-label">Next Payment</div>
+                            <div class="recurring-detail-value">
+                                <%= new
+                                Date(recurringExpense.nextExpenceAt).toLocaleDateString('en-IN', {
+                                year: 'numeric', month: 'long', day: 'numeric' }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Expense Details -->
+                <div class="expense-details">
+                    <% if (type === 'ote') { %>
+                    <!-- One-time Expense Details -->
+                    <div class="detail-group">
+                        <div class="detail-label">Date & Time</div>
+                        <div class="detail-value large">
+                            <%= new Date(oneTimeExpense.dateAndTime).toLocaleDateString('en-IN', {
+                            year: 'numeric', month: 'long', day: 'numeric' }) %>
+                            <br />
+                            <span style="font-size: 1rem; color: var(--text-muted)">
+                                <%= new Date(oneTimeExpense.dateAndTime).toLocaleTimeString('en-IN',
+                                { hour: '2-digit', minute: '2-digit', hour12: true }) %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <div class="detail-label">Category</div>
+                        <div class="detail-value">One-time Purchase</div>
+                    </div>
+                    <% } else { %>
+                    <!-- Recurring Expense Details -->
+                    <div class="detail-group">
+                        <div class="detail-label">Start Date</div>
+                        <div class="detail-value large">
+                            <%= new Date(recurringExpense.nextExpenceAt).toLocaleDateString('en-IN',
+                            { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                        </div>
+                    </div>
+                    <div class="detail-group">
+                        <div class="detail-label">Last Added</div>
+                        <div class="detail-value">
+                            <% if (recurringExpense.lastExpenceAddedAt) { %> <%= new
+                            Date(recurringExpense.lastExpenceAddedAt).toLocaleDateString('en-IN', {
+                            year: 'numeric', month: 'short', day: 'numeric' }) %> <% } else { %>
+                            <span style="color: var(--text-muted); font-style: italic"
+                                >Not yet</span
+                            >
+                            <% } %>
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- Description -->
+                <div class="description-section">
+                    <div class="detail-group">
+                        <div class="detail-label">Description</div>
+                        <div class="description-content">
+                            <% const description = type === 'ote' ? oneTimeExpense.description :
+                            recurringExpense.description; if (description && description.trim()) {
+                            %> <%= description %> <% } else { %>
+                            <div class="no-description">No description provided</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="action-btn delete" onclick="showDeleteModal()">
+                        🗑️ Delete Expense
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal-overlay" id="deleteModal">
+            <div class="modal-content">
+                <h2 class="modal-title">Confirm Deletion</h2>
+                <p class="modal-message">
+                    Are you sure you want to delete this <%= type === 'ote' ? 'one-time' :
+                    'recurring' %> expense?
+                    <br /><br />
+                    <strong
+                        >"<%= type === 'ote' ? oneTimeExpense.title : recurringExpense.title
+                        %>"</strong
+                    >
+                    <br /><br />
+                    This action cannot be undone.
+                </p>
+                <div class="modal-actions">
+                    <a
+                        href="/dashboard/<%= type %>/delete/<%= type === 'ote' ? oneTimeExpense._id : recurringExpense._id %>"
+                        class="modal-btn confirm"
+                    >
+                        Yes, Delete
+                    </a>
+                    <button class="modal-btn cancel" onclick="hideDeleteModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function showDeleteModal() {
+                document.getElementById('deleteModal').style.display = 'flex';
+            }
+
+            function hideDeleteModal() {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+
+            // Close modal when clicking outside
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('modal-overlay')) {
+                    hideDeleteModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    hideDeleteModal();
+                }
+            });
+        </script>
+    </body>
+</html>

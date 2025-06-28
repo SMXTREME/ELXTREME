@@ -11,6 +11,11 @@ signinRouter.get('/', async (req, res) => {
 
         const user = await User.findById(data._id);
 
+        req.session.isLogin = true;
+        req.session.username = user.userName;
+        req.session.password = user.password;
+        req.session._id = user._id;
+
         if (user) return res.redirect('/dashboard');
     }
 

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dashboard - ELXTREME</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                --bg-secondary: rgba(255, 255, 255, 0.05);
+                --text-primary: #ffffff;
+                --text-secondary: rgba(255, 255, 255, 0.9);
+                --text-muted: rgba(255, 255, 255, 0.7);
+                --card-bg: rgba(255, 255, 255, 0.1);
+                --card-border: rgba(255, 255, 255, 0.2);
+                --card-hover-bg: rgba(255, 255, 255, 0.15);
+                --button-bg: rgba(255, 255, 255, 0.1);
+                --button-border: rgba(255, 255, 255, 0.3);
+                --button-hover-bg: rgba(255, 255, 255, 0.2);
+                --input-bg: rgba(255, 255, 255, 0.1);
+                --input-border: rgba(255, 255, 255, 0.2);
+                --shadow-color: rgba(0, 0, 0, 0.2);
+            }
+
+            @media (prefers-color-scheme: light) {
+                :root {
+                    --bg-primary: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+                    --bg-secondary: rgba(0, 0, 0, 0.03);
+                    --text-primary: #2d3436;
+                    --text-secondary: #636e72;
+                    --text-muted: #636e72;
+                    --card-bg: rgba(255, 255, 255, 0.8);
+                    --card-border: rgba(0, 0, 0, 0.1);
+                    --card-hover-bg: rgba(255, 255, 255, 0.95);
+                    --button-bg: rgba(255, 255, 255, 0.9);
+                    --button-border: rgba(0, 0, 0, 0.1);
+                    --button-hover-bg: rgba(255, 255, 255, 1);
+                    --input-bg: rgba(255, 255, 255, 0.9);
+                    --input-border: rgba(0, 0, 0, 0.1);
+                    --shadow-color: rgba(0, 0, 0, 0.1);
+                }
+            }
+
+            body {
+                font-family: 'Arial', sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                min-height: 100vh;
+            }
+
+            /* Header */
+            .header {
+                background: var(--card-bg);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid var(--card-border);
+                padding: 15px 0;
+            }
+
+            .header-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                font-weight: 900;
+                background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-transform: uppercase;
+                letter-spacing: -1px;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .welcome-text {
+                color: var(--text-secondary);
+                font-weight: 500;
+            }
+
+            .logout-btn {
+                padding: 8px 20px;
+                background: var(--button-bg);
+                border: 1px solid var(--button-border);
+                border-radius: 25px;
+                color: var(--text-primary);
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .logout-btn:hover {
+                background: var(--button-hover-bg);
+                transform: translateY(-1px);
+            }
+
+            /* Main Container */
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 30px 20px;
+            }
+
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                margin-bottom: 40px;
+            }
+
+            /* Cards */
+            .card {
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 15px;
+                padding: 30px;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+
+            .card:hover {
+                background: var(--card-hover-bg);
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px var(--shadow-color);
+            }
+
+            .total-card {
+                text-align: center;
+            }
+
+            .total-amount {
+                font-size: 3rem;
+                font-weight: 900;
+                color: var(--text-primary);
+                margin: 20px 0;
+            }
+
+            .total-label {
+                font-size: 1.2rem;
+                color: var(--text-secondary);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .currency {
+                font-size: 1.5rem;
+                color: var(--text-muted);
+            }
+
+            /* Action Buttons */
+            .actions-card {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .action-btn {
+                padding: 15px 25px;
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                color: white;
+                text-decoration: none;
+                border: none;
+                border-radius: 10px;
+                font-size: 1.1rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+            }
+
+            .action-btn.secondary {
+                background: linear-gradient(45deg, #48dbfb, #0984e3);
+            }
+
+            .action-btn.secondary:hover {
+                box-shadow: 0 10px 25px rgba(72, 219, 251, 0.4);
+            }
+
+            /* Toggle Switch */
+            .toggle-container {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .toggle-label {
+                font-weight: 600;
+                color: var(--text-secondary);
+            }
+
+            .toggle-switch {
+                position: relative;
+                width: 60px;
+                height: 30px;
+                background: var(--input-bg);
+                border: 2px solid var(--input-border);
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .toggle-switch::before {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 22px;
+                height: 22px;
+                background: var(--text-primary);
+                border-radius: 50%;
+                transition: all 0.3s ease;
+            }
+
+            .toggle-switch.active {
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+            }
+
+            .toggle-switch.active::before {
+                left: 32px;
+                background: white;
+            }
+
+            /* Expenses List */
+            .expenses-section {
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 15px;
+                padding: 30px;
+                backdrop-filter: blur(10px);
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 25px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: var(--text-primary);
+            }
+
+            .expense-item {
+                display: block;
+                background: var(--input-bg);
+                border: 1px solid var(--input-border);
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 15px;
+                text-decoration: none;
+                color: var(--text-primary);
+                transition: all 0.3s ease;
+            }
+
+            .expense-item:hover {
+                background: var(--card-hover-bg);
+                transform: translateX(5px);
+                box-shadow: 0 5px 15px var(--shadow-color);
+            }
+
+            .expense-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+
+            .expense-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+            }
+
+            .expense-amount {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: #ff6b6b;
+            }
+
+            .expense-meta {
+                display: flex;
+                gap: 15px;
+                font-size: 0.9rem;
+                color: var(--text-muted);
+            }
+
+            .expense-date {
+                font-weight: 500;
+            }
+
+            .expense-type {
+                background: linear-gradient(45deg, #48dbfb, #0984e3);
+                color: white;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-size: 0.8rem;
+                font-weight: 600;
+            }
+
+            .expense-type.recurring {
+                background: linear-gradient(45deg, #feca57, #ff9f43);
+            }
+
+            /* Forms */
+            .form-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .form-container {
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 15px;
+                padding: 30px;
+                width: 90%;
+                max-width: 500px;
+                backdrop-filter: blur(10px);
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 25px;
+                text-align: center;
+                color: var(--text-primary);
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: var(--text-secondary);
+            }
+
+            option {
+                background: #2d3436;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+            }
+
+            .form-input {
+                width: 100%;
+                padding: 12px 15px;
+                background: var(--input-bg);
+                border: 1px solid var(--input-border);
+                border-radius: 8px;
+                color: var(--text-primary);
+                font-size: 1rem;
+                transition: all 0.3s ease;
+            }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #ff6b6b;
+                box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+            }
+
+            .form-input::placeholder {
+                color: var(--text-muted);
+            }
+
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .form-actions {
+                display: flex;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            .form-btn {
+                flex: 1;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 8px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .form-btn.primary {
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                color: white;
+            }
+
+            .form-btn.secondary {
+                background: var(--button-bg);
+                color: var(--text-primary);
+                border: 1px solid var(--button-border);
+            }
+
+            .form-btn:hover {
+                transform: translateY(-2px);
+            }
+
+            .close-btn {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--text-muted);
+                cursor: pointer;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .header-content {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .user-info {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .form-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">ELXTREME</div>
+                <div class="user-info">
+                    <span class="welcome-text">Hello, <%= user.userName %></span>
+                    <a href="/logout" class="logout-btn">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Total Expense Card -->
+                <div class="card total-card">
+                    <div class="total-label">Total Expense for the Month</div>
+                    <div class="total-amount">
+                        ₹ <%= currentMonthsTotalFormatted %> <span class="currency">INR</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Card -->
+                <div class="card actions-card">
+                    <button class="action-btn" onclick="showForm('oneTime')">Add Expense</button>
+                    <button class="action-btn secondary" onclick="showForm('recurring')">
+                        Add Recurring Expense
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toggle and Expenses Section -->
+            <div class="toggle-container">
+                <span class="toggle-label">Show One-time</span>
+                <div class="toggle-switch" id="expenseToggle" onclick="toggleExpenseView()"></div>
+                <span class="toggle-label">Show Recurring</span>
+            </div>
+
+            <!-- Expenses List -->
+            <div class="expenses-section">
+                <h2 class="section-title">All Expenses</h2>
+
+                <!-- One-time Expenses -->
+                <div id="oneTimeExpenses">
+                    <% if (oneTimeExpense.length > 0) { %> <% oneTimeExpense.forEach(expense => { %>
+                    <a href="/dashboard/ote/view/<%= expense._id %>" class="expense-item">
+                        <div class="expense-header">
+                            <span class="expense-title"><%= expense.title %></span>
+                            <span class="expense-amount">₹<%= expense.amount %></span>
+                        </div>
+                        <div class="expense-meta">
+                            <span class="expense-date"
+                                ><%= new Date(expense.dateAndTime).toLocaleDateString() %></span
+                            >
+                            <% if (expense.tags && expense.tags.length > 0) { %>
+                            <span class="expense-tags">Tags: <%= expense.tags %></span>
+                            <% } %>
+                        </div>
+                    </a>
+                    <% }); %> <% } else { %>
+                    <div class="expense-item" style="text-align: center; color: var(--text-muted)">
+                        No one-time expenses found
+                    </div>
+                    <% } %>
+                </div>
+
+                <!-- Recurring Expenses -->
+                <div id="recurringExpenses" style="display: none">
+                    <% if (recurringExpense.length > 0) { %> <% recurringExpense.forEach(expense =>
+                    { %>
+                    <a href="/dashboard/re/view/<%= expense._id %>" class="expense-item">
+                        <div class="expense-header">
+                            <span class="expense-title"><%= expense.title %></span>
+                            <span class="expense-amount">₹<%= expense.amount %></span>
+                        </div>
+                        <div class="expense-meta">
+                            <span class="expense-date">
+                                Next: <%= new Date(expense.nextExpenceAt).toLocaleDateString() %>
+                            </span>
+
+                            <span class="expense-frequency">
+                                Every <%= expense.wayOfRepeats.repeats %> <%=
+                                expense.wayOfRepeats.every %>
+                            </span>
+                        </div>
+                    </a>
+                    <% }); %> <% } else { %>
+                    <div class="expense-item" style="text-align: center; color: var(--text-muted)">
+                        No recurring expenses found
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- One-time Expense Form -->
+        <div class="form-overlay" id="oneTimeForm">
+            <div class="form-container">
+                <button class="close-btn" onclick="hideForm('oneTime')">&times;</button>
+                <h2 class="form-title">Add One-time Expense</h2>
+                <form action="/dashboard/ote/add" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input
+                            type="text"
+                            name="title"
+                            class="form-input"
+                            placeholder="Expense title"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount (₹)</label>
+                        <input
+                            type="number"
+                            name="amount"
+                            class="form-input"
+                            placeholder="0.00"
+                            step="0.01"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date & Time</label>
+                        <input
+                            type="datetime-local"
+                            name="dateAndTime"
+                            class="form-input"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea
+                            name="description"
+                            class="form-input"
+                            placeholder="Optional description"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="form-btn primary">Add Expense</button>
+                        <button
+                            type="button"
+                            class="form-btn secondary"
+                            onclick="hideForm('oneTime')"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recurring Expense Form -->
+        <div class="form-overlay" id="recurringForm">
+            <div class="form-container">
+                <button class="close-btn" onclick="hideForm('recurring')">&times;</button>
+                <h2 class="form-title">Add Recurring Expense</h2>
+                <form action="/dashboard/re/add" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input
+                            type="text"
+                            name="title"
+                            class="form-input"
+                            placeholder="Expense title"
+                            value="Expence"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount (₹)</label>
+                        <input
+                            type="number"
+                            name="amount"
+                            class="form-input"
+                            placeholder="0.00"
+                            step="0.01"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input
+                            type="date"
+                            name="nextExpenceAt"
+                            class="form-input"
+                            required
+                            value="<%= new Date().toISOString().slice(0,10) %>"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Repeat Every</label>
+                        <div class="form-row">
+                            <input
+                                type="number"
+                                name="repeats"
+                                class="form-input"
+                                placeholder="Number"
+                                value="1"
+                                min="1"
+                                required
+                            />
+                            <select name="every" class="form-input" required>
+                                <option value="day" selected>Day(s)</option>
+                                <option value="week">Week(s)</option>
+                                <option value="month">Month(s)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea
+                            name="description"
+                            class="form-input"
+                            placeholder="Optional description"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="form-btn primary">
+                            Add Recurring Expense
+                        </button>
+                        <button
+                            type="button"
+                            class="form-btn secondary"
+                            onclick="hideForm('recurring')"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            // Toggle between one-time and recurring expenses
+            function toggleExpenseView() {
+                const toggle = document.getElementById('expenseToggle');
+                const oneTimeExpenses = document.getElementById('oneTimeExpenses');
+                const recurringExpenses = document.getElementById('recurringExpenses');
+
+                toggle.classList.toggle('active');
+
+                if (toggle.classList.contains('active')) {
+                    oneTimeExpenses.style.display = 'none';
+                    recurringExpenses.style.display = 'block';
+                } else {
+                    oneTimeExpenses.style.display = 'block';
+                    recurringExpenses.style.display = 'none';
+                }
+            }
+
+            // Show form overlay
+            function showForm(type) {
+                const formId = type === 'oneTime' ? 'oneTimeForm' : 'recurringForm';
+                document.getElementById(formId).style.display = 'flex';
+
+                // Set current date and time for one-time expense
+                if (type === 'oneTime') {
+                    const now = new Date();
+                    const dateTimeInput = document.querySelector(
+                        '#oneTimeForm input[name="dateAndTime"]'
+                    );
+                    dateTimeInput.value = now.toISOString().slice(0, 16);
+                }
+            }
+
+            // Hide form overlay
+            function hideForm(type) {
+                const formId = type === 'oneTime' ? 'oneTimeForm' : 'recurringForm';
+                document.getElementById(formId).style.display = 'none';
+            }
+
+            // Close form when clicking outside
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('form-overlay')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        </script>
+    </body>
+</html>
