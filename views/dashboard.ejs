@@ -541,9 +541,9 @@
                             <span class="expense-amount">₹<%= expense.amount %></span>
                         </div>
                         <div class="expense-meta">
-                            <span class="expense-date"
-                                ><%= new Date(expense.dateAndTime).toLocaleDateString() %></span
-                            >
+                            <span class="expense-date">
+                                <%= new Date(expense.dateAndTime).toLocaleDateString('en-GB') %>
+                            </span>
                             <% if (expense.tags && expense.tags.length > 0) { %>
                             <span class="expense-tags">Tags: <%= expense.tags %></span>
                             <% } %>
