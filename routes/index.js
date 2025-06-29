@@ -6,6 +6,7 @@ const { isLogin } = require('../middleware/isLogin');
 const RecurringExpense = require('../models/RecurringExpense');
 const redis = require('../redis');
 const OneTimeExpense = require('../models/OneTimeExpense');
+const { getNextExpenseDate } = require('../controllers/getNextExpenseDate');
 
 const indexRouter = Router();
 
