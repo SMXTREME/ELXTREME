@@ -71,6 +71,7 @@ indexRouter.get('/update', async (req, res) => {
         await recurringExpense.save();
         await redis.set(`${recurringExpense._id}-re`, JSON.stringify(recurringExpense), 'EX', 1800);
     }
+    res.status(200).send('done');
 });
 
 module.exports = { indexRouter };
