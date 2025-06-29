@@ -2,6 +2,7 @@ const { Router } = require('express');
 const redis = require('../redis');
 const User = require('../models/User');
 const { signJWT, verifyJWT } = require('../controllers/JWT');
+const { decrypt } = require('../controllers/passwordEncription');
 const signinRouter = Router();
 
 signinRouter.get('/', async (req, res) => {
@@ -9,14 +10,30 @@ signinRouter.get('/', async (req, res) => {
     if (req.cookies['rememberMe']) {
         const data = verifyJWT(req.cookies['rememberMe']);
 
-        const user = await User.findById(data._id);
+        const UserKey = `${data.username}-user`;
 
-        req.session.isLogin = true;
-        req.session.username = user.userName;
-        req.session.password = user.password;
-        req.session._id = user._id;
+        const result = await redis.get(UserKey);
 
-        if (user) return res.redirect('/dashboard');
+        let user = null;
+
+        if (result) {
+            user = await JSON.parse(result);
+        } else {
+            user = await User.findById(data._id);
+            await redis.set(UserKey, JSON.stringify(user), 'EX', 60);
+        }
+
+        if (user) {
+            req.session.isLogin = true;
+            req.session.username = user.userName;
+            req.session.password = user.password;
+            req.session._id = user._id;
+
+            return res.redirect('/dashboard');
+        } else {
+            res.clearCookie('connect.sid');
+            res.clearCookie('rememberMe');
+        }
     }
 
     res.render('signin', { type: null, message: null });
@@ -36,8 +53,12 @@ signinRouter.post('/', async (req, res) => {
     if (result) {
         user = await JSON.parse(result);
     } else {
-        user = await User.findOne({ userName: username, password });
+        user = await User.findOne({ userName: username });
+        await redis.set(UserKey, JSON.stringify(user), 'EX', 60);
     }
+
+    const userPassword = decrypt(`${user.password}`);
+    if (userPassword !== password) user === null;
 
     if (!user)
         return res.render('signin', { type: 'error', message: 'Incorrect Username or Password' });
@@ -46,8 +67,6 @@ signinRouter.post('/', async (req, res) => {
     req.session.username = user.userName;
     req.session.password = user.password;
     req.session._id = user._id;
-
-    redis.set(UserKey, JSON.stringify(user), 'EX', 60);
 
     if (rememberMe) {
         res.cookie(

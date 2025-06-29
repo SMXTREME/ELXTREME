@@ -5,37 +5,46 @@ const User = require('../models/User');
 
 const { oteRouter } = require('./oneTimeExpense');
 const { reRouter } = require('./recurringExpense');
+const redis = require('../redis');
 
 const dashboardRouter = Router();
 
 dashboardRouter.get('/', async (req, res) => {
     const userid = req.session._id;
 
-    const user = await User.findById(userid);
-    const oneTimeExpense = await OneTimeExpense.find({ userid }).sort({ dateAndTime: -1 });
-    const recurringExpense = await RecurringExpense.find({ userid });
+    let user;
+    const UserKey = `${req.session.username}-user`;
 
-    // Calculate total one-time expenses for each month of each year
-    const monthlyTotals = {}; // { [year]: [12 months array] }
+    const [userResult, oneTimeExpense, recurringExpense] = await Promise.all([
+        redis.get(UserKey),
+        OneTimeExpense.find({ userid }).sort({ dateAndTime: -1 }),
+        RecurringExpense.find({ userid }),
+    ]);
+
+    if (userResult) {
+        user = JSON.stringify(userResult);
+    } else {
+        user = await User.findById(userid);
+    }
+
+    const monthlyTotals = {};
     oneTimeExpense.forEach((exp) => {
         const date = new Date(exp.dateAndTime);
         const year = date.getFullYear();
-        const month = date.getMonth(); // 0-11
+        const month = date.getMonth();
         if (!monthlyTotals[year]) {
             monthlyTotals[year] = Array(12).fill(0);
         }
         monthlyTotals[year][month] += exp.amount;
     });
 
-    // Calculate the total one-time expenses for the current month and year
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth(); // 0-11
+    const currentMonth = now.getMonth();
     const currentMonthsTotal = monthlyTotals[currentYear]
         ? monthlyTotals[currentYear][currentMonth]
         : 0;
 
-    // Format total in Indian number system
     const currentMonthsTotalFormatted = currentMonthsTotal.toLocaleString('en-IN');
 
     res.render('dashboard', {

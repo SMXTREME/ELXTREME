@@ -1,6 +1,8 @@
+const redis = require('../redis');
 const { Router } = require('express');
 const User = require('../models/User');
-const redis = require('../redis');
+const { encrypt, decrypt } = require('../controllers/passwordEncription');
+
 const signupRouter = Router();
 
 signupRouter.get('/', async (req, res) => {
@@ -11,7 +13,7 @@ signupRouter.post('/', async (req, res) => {
     const firstName = req.body?.firstName?.trim() || null;
     const lastName = req.body?.lastName?.trim() || null;
     const username = req.body?.username?.trim() || null;
-    const password = req.body?.password || null;
+    let password = req.body?.password || null;
 
     console.log(firstName, lastName, username, password);
     const UserKey = `${username}-user`;
@@ -41,20 +43,22 @@ signupRouter.post('/', async (req, res) => {
             message: 'First and last names must be at least 2 letters and contain only letters',
         });
 
+    password = encrypt(password);
+
     const result = await redis.get(UserKey);
     let user;
 
     if (result) {
         user = await JSON.parse(result);
     } else {
-        user = await User.findOne({ userName: username, password });
+        user = await User.findOne({ userName: username });
     }
 
     if (user)
         return res.render('signup', {
             type: 'error',
             message: `The username ${username} is already in use by another user`,
-        }); // null | 'success' | 'error'
+        });
 
     user = new User({
         firstName,
@@ -65,9 +69,9 @@ signupRouter.post('/', async (req, res) => {
     });
     await user.save();
 
-    redis.set(UserKey, JSON.stringify(user), 'EX', 60);
+    await redis.set(UserKey, JSON.stringify(user), 'EX', 60);
 
-    res.render('signup', { type: 'success', message: 'Account created' }); // null | 'success' | 'error'
+    res.render('signup', { type: 'success', message: 'Account created' });
 });
 
 module.exports = { signupRouter };

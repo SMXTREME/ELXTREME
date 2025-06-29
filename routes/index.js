@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { signupRouter } = require('./signup');
 const { signinRouter } = require('./signin');
 const { dashboardRouter } = require('./dashboard');
+const { isLogin } = require('../middleware/isLogin');
 
 const indexRouter = Router();
 
@@ -11,7 +12,7 @@ indexRouter.get('/', async (req, res) => {
 
 indexRouter.use('/signup', signupRouter);
 indexRouter.use('/signin', signinRouter);
-indexRouter.use('/dashboard', dashboardRouter);
+indexRouter.use('/dashboard', isLogin, dashboardRouter);
 
 indexRouter.use('/logout', async (req, res) => {
     req.session.destroy((err) => {
