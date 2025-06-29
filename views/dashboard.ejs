@@ -567,7 +567,8 @@
                         </div>
                         <div class="expense-meta">
                             <span class="expense-date">
-                                Next: <%= new Date(expense.nextExpenceAt).toLocaleDateString() %>
+                                Next: <%= new Date(expense.dateAndTime).toLocaleDateString('en-GB')
+                                %>
                             </span>
 
                             <span class="expense-frequency">
