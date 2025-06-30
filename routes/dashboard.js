@@ -22,7 +22,7 @@ dashboardRouter.get('/', async (req, res) => {
     ]);
 
     if (userResult) {
-        user = JSON.stringify(userResult);
+        user = JSON.parse(userResult);
     } else {
         user = await User.findById(userid);
     }

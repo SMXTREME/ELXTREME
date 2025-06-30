@@ -530,8 +530,8 @@
                     <div class="detail-group">
                         <div class="detail-label">Start Date</div>
                         <div class="detail-value large">
-                            <%= new Date(recurringExpense.nextExpenceAt).toLocaleDateString('en-IN',
-                            { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                            <%= new Date(recurringExpense.startDate).toLocaleDateString('en-IN', {
+                            year: 'numeric', month: 'long', day: 'numeric' }) %>
                         </div>
                     </div>
                     <div class="detail-group">

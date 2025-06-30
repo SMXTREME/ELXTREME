@@ -13,6 +13,10 @@ const recurringExpense = new Schema({
         type: Number,
         required: true,
     },
+    startDate: {
+        type: Date,
+        required: true,
+    },
     nextExpenceAt: {
         type: Date,
         required: true,

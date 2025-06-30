@@ -23,6 +23,10 @@ reRouter.post('/add', async (req, res) => {
 
     const today = new Date();
     let nextExpenseDate = new Date(nextExpenceAt);
+    const startDate = nextExpenseDate;
+
+    if (startDate < today.setHours(0, 0, 0, 0)) return res.redirect('/dashboard');
+
     const isToday =
         today.getFullYear() === nextExpenseDate.getFullYear() &&
         today.getMonth() === nextExpenseDate.getMonth() &&
@@ -59,6 +63,7 @@ reRouter.post('/add', async (req, res) => {
         nextExpenceAt: nextExpenseDate,
         lastExpenceAddedAt,
         oneTimePayments,
+        startDate,
     });
     await recurringExpense.save();
 

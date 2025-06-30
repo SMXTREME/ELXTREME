@@ -600,6 +600,7 @@
                             class="form-input"
                             placeholder="Expense title"
                             required
+                            value="Expense"
                         />
                     </div>
                     <div class="form-group">
@@ -658,7 +659,7 @@
                             name="title"
                             class="form-input"
                             placeholder="Expense title"
-                            value="Expence"
+                            value="Expense"
                         />
                     </div>
                     <div class="form-group">
@@ -680,6 +681,7 @@
                             class="form-input"
                             required
                             value="<%= new Date().toISOString().slice(0,10) %>"
+                            min="<%= new Date().toISOString().slice(0,10) %>"
                         />
                     </div>
                     <div class="form-group">

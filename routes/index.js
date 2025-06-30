@@ -30,20 +30,6 @@ indexRouter.use('/logout', async (req, res) => {
     });
 });
 
-indexRouter.get('/time', async (req, res) => {
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    let hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    const timeStr = `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
-    res.send(timeStr);
-});
-
 indexRouter.get('/update', async (req, res) => {
     const recurringExpenses = await RecurringExpense.find();
 
@@ -71,20 +57,25 @@ indexRouter.get('/update', async (req, res) => {
                 'EX',
                 1800
             );
+
             recurringExpense.oneTimePayments.push(`${oneTimeExpense.id}`);
+            recurringExpense.lastExpenceAddedAt = recurringExpense.nextExpenceAt;
+            recurringExpense.nextExpenceAt = new Date(
+                getNextExpenseDate(
+                    recurringExpense.nextExpenceAt,
+                    recurringExpense.wayOfRepeats.repeats,
+                    recurringExpense.wayOfRepeats.every
+                )
+            );
+
+            await recurringExpense.save();
+            await redis.set(
+                `${recurringExpense._id}-re`,
+                JSON.stringify(recurringExpense),
+                'EX',
+                1800
+            );
         }
-
-        recurringExpense.lastExpenceAddedAt = recurringExpense.nextExpenceAt;
-        recurringExpense.nextExpenceAt = new Date(
-            getNextExpenseDate(
-                recurringExpense.nextExpenceAt,
-                recurringExpense.wayOfRepeats.repeats,
-                recurringExpense.wayOfRepeats.every
-            )
-        );
-
-        await recurringExpense.save();
-        await redis.set(`${recurringExpense._id}-re`, JSON.stringify(recurringExpense), 'EX', 1800);
     }
     res.status(200).send('done');
 });
