@@ -508,12 +508,34 @@
                 <div class="card total-card">
                     <div class="total-label">Total Expense for the Month</div>
                     <div class="total-amount">
-                        ₹ <%= currentMonthsTotalFormatted %> <span class="currency">INR</span>
+                        ₹ <span id="totalAmount"><%= currentMonthsTotalFormatted %></span>
+                        <span class="currency">INR</span>
                     </div>
                 </div>
 
                 <!-- Action Buttons Card -->
                 <div class="card actions-card">
+                    <div class="form-group" style="margin-bottom: 20px">
+                        <label class="form-label">Select Month</label>
+                        <select id="monthSelector" class="form-input" onchange="updateTotal()">
+                            <% const currentDate = new Date(); const currentYear =
+                            currentDate.getFullYear(); const currentMonth = currentDate.getMonth();
+                            const monthNames = ['January', 'February', 'March', 'April',
+                            'May','June', 'July', 'August', 'September', 'October',
+                            'November','December']; const years =
+                            Object.keys(monthlyTotals).sort((a, b) => b - a); %> <%
+                            years.forEach(year => { %> <% for(let month = 0; month < 12; month++) {
+                            %> <% if(monthlyTotals[year][month] > 0 || (year == currentYear && month
+                            == currentMonth)) { %>
+                            <option
+                                value="<%= year %>-<%= month %>"
+                                selected="<%= year == currentYear && month == currentMonth %>"
+                            >
+                                <%= monthNames[month] %> <%= year %>
+                            </option>
+                            <% } %> <% } %> <% }) %>
+                        </select>
+                    </div>
                     <button class="action-btn" onclick="showForm('oneTime')">Add Expense</button>
                     <button class="action-btn secondary" onclick="showForm('recurring')">
                         Add Recurring Expense
@@ -729,6 +751,23 @@
         </div>
 
         <script>
+            const monthlyTotalsData = <%- JSON.stringify(monthlyTotals) %>;
+
+            function updateTotal() {
+                const selector = document.getElementById('monthSelector');
+                const [year, month] = selector.value.split('-');
+                const total = monthlyTotalsData[year]
+                    ? monthlyTotalsData[year][parseInt(month)]
+                    : 0;
+
+                // Format the total with commas
+                const formatted = total.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+
+                document.getElementById('totalAmount').textContent = formatted;
+            }
             // Toggle between one-time and recurring expenses
             function toggleExpenseView() {
                 const toggle = document.getElementById('expenseToggle');

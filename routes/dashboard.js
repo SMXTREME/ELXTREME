@@ -45,13 +45,17 @@ dashboardRouter.get('/', async (req, res) => {
         ? monthlyTotals[currentYear][currentMonth]
         : 0;
 
-    const currentMonthsTotalFormatted = currentMonthsTotal.toLocaleString('en-IN');
+    const currentMonthsTotalFormatted = currentMonthsTotal.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 
     res.render('dashboard', {
         oneTimeExpense,
         recurringExpense,
         user,
         currentMonthsTotalFormatted,
+        monthlyTotals,
     });
 });
 
