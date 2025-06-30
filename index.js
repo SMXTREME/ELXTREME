@@ -32,7 +32,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
     session({
-        store: MongoStore.create({ mongoUrl: MONGODB_URI }),
+        store: MongoStore.create({
+            mongoUrl: MONGODB_URI,
+            autoRemove: 'native',
+        }),
         secret: process.env.JWT_SECRET,
         resave: false,
         saveUninitialized: false,
