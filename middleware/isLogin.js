@@ -11,9 +11,7 @@ const redis = require('../redis');
  */
 
 async function isLogin(req, res, next) {
-    if (!req.session?.isLogin) return res.redirect('/signin');
-    if (!req.cookies['rememberMe']) return res.redirect('/signin');
-
+    if (!req.session?.isLogin && !req.cookies['rememberMe']) return res.redirect('/signin');
     if (!req.session?.isLogin && req.cookies['rememberMe']) {
         const data = verifyJWT(req.cookies['rememberMe']);
 
